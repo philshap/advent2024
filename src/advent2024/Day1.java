@@ -1,21 +1,18 @@
 package advent2024;
 
-import java.util.List;
+class Day1 extends Day {
 
-public class Day1 implements Day {
+  Day1() {
+    super(1);
+  }
 
-    @Override
-    public int number() {
-        return 1;
-    }
+  @Override
+  public String part1() {
+    return input.getFirst();
+  }
 
-    @Override
-    public String part1(List<String> input) {
-        return "";
-    }
-
-    @Override
-    public String part2(List<String> input) {
-        return "";
-    }
+  @Override
+  public String part2() {
+    return input.getFirst();
+  }
 }
