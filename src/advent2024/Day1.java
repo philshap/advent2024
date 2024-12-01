@@ -45,4 +45,20 @@ class Day1 extends Day {
     var similarity = Arrays.stream(lists.left).mapToLong(l -> frequencies.getOrDefault(l, 0L) * l).sum();
     return String.valueOf(similarity);
   }
+
+  public static void main(String[] args) {
+    var day = new Day1() {
+      String getData(int day) {
+        return """
+        3   4
+        4   3
+        2   5
+        1   3
+        3   9
+        3   3""";
+      }
+    };
+    System.out.println(day.part1().equals("11"));
+    System.out.println(day.part2().equals("31"));
+  }
 }
