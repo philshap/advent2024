@@ -1,8 +1,6 @@
 package advent2024;
 
 import java.net.URI;
-import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 
 public abstract class Day {
@@ -12,6 +10,7 @@ public abstract class Day {
 
   final int number;
   final List<String> input;
+  final String data;
 
   public int number() {
     return number;
@@ -19,15 +18,15 @@ public abstract class Day {
 
   protected Day(int number) {
     this.number = number;
-    this.input = readInput(number);
+    this.data = getData(number).trim();
+    this.input = Support.splitInput(data);
   }
 
   private static final String INPUT_URL = "https://adventofcode.com/2024/day/%d/input";
 
-  static List<String> readInput(int day) {
+  String getData(int day) {
     try {
-      URL url = new URI(INPUT_URL.formatted(day)).toURL();
-      return Arrays.asList(CachingHttpReader.getData(url).trim().split("\n"));
+      return CachingHttpReader.getData(new URI(INPUT_URL.formatted(day)).toURL());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
