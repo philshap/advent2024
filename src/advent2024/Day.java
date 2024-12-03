@@ -18,15 +18,15 @@ public abstract class Day {
 
   protected Day(int number) {
     this.number = number;
-    this.data = getData(number).trim();
+    this.data = getData().trim();
     this.input = Support.splitInput(data);
   }
 
   private static final String INPUT_URL = "https://adventofcode.com/2024/day/%d/input";
 
-  String getData(int day) {
+  String getData() {
     try {
-      return CachingHttpReader.getData(new URI(INPUT_URL.formatted(day)).toURL());
+      return CachingHttpReader.getData(new URI(INPUT_URL.formatted(number)).toURL());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

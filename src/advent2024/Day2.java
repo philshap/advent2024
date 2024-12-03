@@ -69,7 +69,7 @@ public class Day2 extends Day {
   public static void main(String[] args) {
     var day = new Day2() {
       @Override
-      String getData(int day) {
+      String getData() {
         return """
             7 6 4 2 1
             1 2 7 8 9
