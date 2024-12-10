@@ -5,64 +5,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Day6 extends Day {
   protected Day6() {
     super(6);
   }
 
-  enum Dir {
-    U(0, -1),
-    R(1, 0),
-    D(0, 1),
-    L(-1, 0);
-    final int dx;
-    final int dy;
-
-    Dir(int dx, int dy) {
-      this.dx = dx;
-      this.dy = dy;
-    }
-    Dir turn() {
-      return switch (this) {
-        case U -> R;
-        case R -> D;
-        case D -> L;
-        case L -> U;
-      };
-    }
-  }
-
-  record Pos(int x, int y) { }
-
-  record Guard(Pos pos, Dir dir) {
+  record Guard(Pos pos, Pos dir) {
     Guard move() {
-      return new Guard(new Pos(pos.x + dir.dx, pos.y + dir.dy), dir);
+      return new Guard(pos.plus(dir), dir);
     }
     Guard turn() {
-      return new Guard(pos, dir.turn());
+      return new Guard(pos, Pos.TURN.get(dir));
     }
-  }
-
-  static Stream<Pos> posStream(List<String> input) {
-    return IntStream.range(0, input.getFirst().length())
-                    .boxed()
-                    .flatMap(x -> IntStream.range(0, input.size())
-                                           .mapToObj(y -> new Pos(x, y)));
   }
 
   record Lab(Map<Pos, Character> map, Guard guard) {
     static Lab fromInput(List<String> input) {
-      var map = posStream(input)
-          .collect(Collectors.toMap(Function.identity(), pos -> input.get(pos.y).charAt(pos.x)));
+      var map = Pos.collectByPos(input, Function.identity());
       Guard guard = null;
       for (var entry : map.entrySet()) {
         if (entry.getValue() == '^') {
           map.put(entry.getKey(), '.');
-          guard = new Guard(entry.getKey(), Dir.U);
+          guard = new Guard(entry.getKey(), Pos.U);
           break;
         }
       }
@@ -71,7 +36,6 @@ public class Day6 extends Day {
 
     int patrolLength() {
       Set<Pos> seen = new HashSet<>();
-
       Guard patrol = guard;
       while (true) {
         seen.add(patrol.pos);
@@ -121,7 +85,7 @@ public class Day6 extends Day {
   @Override
   String part2() {
     Lab lab = Lab.fromInput(input);
-    long count = posStream(input).parallel().filter(lab::isLoop).count();
+    long count = Pos.posStream(input).map(Pair::l).parallel().filter(lab::isLoop).count();
     return String.valueOf(count);
   }
 

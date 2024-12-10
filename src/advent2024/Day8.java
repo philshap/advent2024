@@ -13,38 +13,27 @@ public class Day8 extends Day {
     super(8);
   }
 
-  record Pos(int x, int y) {
-    Pos shift(int dx, int dy) {
-      return new Pos(x + dx, y + dy);
-    }
-  }
-
   record City(int height, int width, Collection<List<Pos>> antennaGroups) {
     static City fromInput(List<String> input) {
-      int width = input.getFirst().length();
-      int height = input.size();
       Map<Character, List<Pos>> groups = new HashMap<>();
-      for (int y = 0; y < height; y++) {
-        String line = input.get(y);
-        for (int x = 0; x < width; x++) {
-          char ch = line.charAt(x);
-          if (ch != '.') {
-            groups.computeIfAbsent(ch, ArrayList::new).add(new Pos(x, y));
-          }
-        }
-      }
-      return new City(height, width, groups.values());
+      Pos.posStream(input)
+          .forEach(pair -> {
+            char ch = pair.r();
+            if (ch != '.') {
+              groups.computeIfAbsent(ch, ArrayList::new).add(pair.l());
+            }
+          });
+      return new City(input.size(), input.getFirst().length(), groups.values());
     }
 
     boolean valid(Pos pos) {
-      return 0 <= pos.x && pos.x < width && 0 <= pos.y && pos.y < height;
+      return 0 <= pos.x() && pos.x() < width && 0 <= pos.y() && pos.y() < height;
     }
 
     Stream<Pos> extend1(List<Pos> pair) {
       Pos p1 = pair.getFirst(), p2 = pair.getLast();
-      int dx = p1.x - p2.x;
-      int dy = p1.y - p2.y;
-      return Stream.of(p1.shift(dx, dy), p2.shift(-dx, -dy)).filter(this::valid);
+      Pos delta = p1.minus(p2);
+      return Stream.of(p1.plus(delta), p2.minus(delta)).filter(this::valid);
     }
 
     long countAntiNodes(Function<List<Pos>, Stream<Pos>> extend) {
@@ -60,15 +49,14 @@ public class Day8 extends Day {
     Stream<Pos> extend2(List<Pos> pair) {
       Pos p1 = pair.getFirst(), p2 = pair.getLast();
       List<Pos> anti = new ArrayList<>();
-      int dx = p1.x - p2.x;
-      int dy = p1.y - p2.y;
+      Pos delta = p1.minus(p2);
       while (valid(p1)) {
         anti.add(p1);
-        p1 = p1.shift(dx, dy);
+        p1 = p1.plus(delta);
       }
       while (valid(p2)) {
         anti.add(p2);
-        p2 = p2.shift(-dx, -dy);
+        p2 = p2.minus(delta);
       }
       return anti.stream();
     }
