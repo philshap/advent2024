@@ -3,9 +3,11 @@ package advent2024;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
@@ -67,5 +69,16 @@ public interface Support {
 
   static List<String> splitInput(String input) {
     return Arrays.asList(input.split("\n"));
+  }
+
+  ///  A computeIfAbsent that supports recursive functions.
+  static <T, R> R computeIfAbsent(Map<T, R> cache, T input, Function<T, R> func) {
+    var result = cache.get(input);
+    if (result != null) {
+      return result;
+    }
+    result = func.apply(input);
+    cache.put(input, result);
+    return result;
   }
 }
