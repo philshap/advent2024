@@ -1,5 +1,6 @@
 package advent2024;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -14,8 +15,9 @@ record Pos(int x, int y) {
   static final Pos L = new Pos(-1, 0);
 
   static final Map<Pos, Pos> TURN = Map.of(U, R, R, D, D, L, L, U);
+  static final Collection<Pos> DIRS = TURN.values();
 
-  static Stream<Pair<Pos, Character>> posStream(List<String> input) {
+  static Stream<Pair<Pos, Character>> streamOf(List<String> input) {
     return IntStream.range(0, input.getFirst().length())
                     .boxed()
                     .flatMap(x -> IntStream.range(0, input.size())
@@ -23,7 +25,7 @@ record Pos(int x, int y) {
   }
 
   static <T> Map<Pos, T> collectByPos(List<String> input, Function<Character, T> convert) {
-    return posStream(input).collect(Collectors.toMap(Pair::l, pair -> convert.apply(pair.r())));
+    return streamOf(input).collect(Collectors.toMap(Pair::l, pair -> convert.apply(pair.r())));
   }
 
   Pos plus(Pos p2) {

@@ -1,6 +1,5 @@
 package advent2024;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,8 +10,6 @@ public class Day10 extends Day {
     super(10);
   }
 
-  static Collection<Pos> DIRS = Pos.TURN.values();
-
   record TopoMap(Map<Pos, Integer> topo, boolean shared) {
     static TopoMap fromInput(List<String> input, boolean shared) {
       return new TopoMap(Pos.collectByPos(input, ch -> ch - '0'), shared);
@@ -20,7 +17,7 @@ public class Day10 extends Day {
 
     Pair<List<Pos>, Integer> extend(Pair<List<Pos>, Integer> pair) {
       return Pair.of(pair.l().stream()
-                         .flatMap(pos -> DIRS.stream().map(pos::plus))
+                         .flatMap(pos -> Pos.DIRS.stream().map(pos::plus))
                          .filter(pos -> topo.getOrDefault(pos, -1) == pair.r())
                          .toList(),
                      pair.r() + 1);

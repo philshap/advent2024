@@ -16,7 +16,7 @@ public class Day8 extends Day {
   record City(int height, int width, Collection<List<Pos>> antennaGroups) {
     static City fromInput(List<String> input) {
       Map<Character, List<Pos>> groups = new HashMap<>();
-      Pos.posStream(input)
+      Pos.streamOf(input)
           .forEach(pair -> {
             char ch = pair.r();
             if (ch != '.') {

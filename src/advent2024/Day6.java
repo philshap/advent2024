@@ -85,7 +85,7 @@ public class Day6 extends Day {
   @Override
   String part2() {
     Lab lab = Lab.fromInput(input);
-    long count = Pos.posStream(input).map(Pair::l).parallel().filter(lab::isLoop).count();
+    long count = Pos.streamOf(input).map(Pair::l).parallel().filter(lab::isLoop).count();
     return String.valueOf(count);
   }
 
