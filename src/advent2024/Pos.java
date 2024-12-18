@@ -28,10 +28,22 @@ record Pos(int x, int y) {
     return streamOf(input).collect(Collectors.toMap(Pair::l, pair -> convert.apply(pair.r())));
   }
 
+  Pos(List<Integer> pair) {
+    this(pair.getFirst(), pair.getLast());
+  }
+
   Pos plus(Pos p2) {
     return new Pos(x + p2.x, y + p2.y);
   }
   Pos minus(Pos p2) {
     return new Pos(x - p2.x, y - p2.y);
+  }
+
+  Pos scale(Pos pos) {
+    return new Pos(x * pos.x, y * pos.y);
+  }
+
+  boolean within(int x1, int x2, int y1, int y2) {
+    return x1 <= x() && x() < x2 && y1 <= y() && y() < y2;
   }
 }
