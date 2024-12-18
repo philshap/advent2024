@@ -34,7 +34,7 @@ public class Day6 extends Day {
       return new Lab(map, guard);
     }
 
-    int patrolLength() {
+    Set<Pos> guardPatrol() {
       Set<Pos> seen = new HashSet<>();
       Guard patrol = guard;
       while (true) {
@@ -50,13 +50,10 @@ public class Day6 extends Day {
           patrol = next;
         }
       }
-      return seen.size();
+      return seen;
     }
 
     boolean isLoop(Pos block) {
-      if (map.get(block) != '.') {
-        return false;
-      }
       Set<Guard> seen = new HashSet<>();
       Guard patrol = guard;
       while (true) {
@@ -79,13 +76,14 @@ public class Day6 extends Day {
 
   @Override
   String part1() {
-    return String.valueOf(Lab.fromInput(input).patrolLength());
+    return String.valueOf(Lab.fromInput(input).guardPatrol().size());
   }
 
   @Override
   String part2() {
     Lab lab = Lab.fromInput(input);
-    long count = Pos.streamOf(input).map(Pair::l).parallel().filter(lab::isLoop).count();
+    // Look for loops, only check spaces the guard will visit on his patrol.
+    long count = lab.guardPatrol().stream().parallel().filter(lab::isLoop).count();
     return String.valueOf(count);
   }
 
