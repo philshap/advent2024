@@ -76,10 +76,7 @@ public class Day11 extends Day {
 
   @Override
   String part2() {
-    var total = Support.longs(data).stream()
-                       .mapToLong(stone -> countMemo(stone, 75))
-                       .sum();
-
+    var total = Support.longStream(data).map(stone -> countMemo(stone, 75)).sum();
     return String.valueOf(total);
   }
 
