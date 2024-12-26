@@ -3,6 +3,7 @@ package advent2024;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 public class Day17 extends Day {
   protected Day17() {
@@ -19,6 +20,10 @@ public class Day17 extends Day {
     }
 
     List<Integer> run() {
+      return run(initialA);
+    }
+
+    List<Integer> run(long initialA) {
       int pc = 0;
       long a = initialA;
       long b = initialB;
@@ -54,6 +59,26 @@ public class Day17 extends Day {
       }
       return output;
     }
+
+    void findInitialARecur(int index, long n, List<Long> results) {
+      var match = ops.subList(index, ops.size());
+      LongStream.range(n, n + 8)
+          .forEach(a -> {
+            if (run(a).equals(match)) {
+              if (index == 0) {
+                results.add(a);
+              } else {
+                findInitialARecur(index - 1, a * 8, results);
+              }
+            }
+          });
+    }
+
+    long findInitialA() {
+      List<Long> results = new ArrayList<>();
+      findInitialARecur(ops.size() - 1, 0L, results);
+      return results.stream().mapToLong(x -> x).min().orElseThrow();
+    }
   }
 
   @Override
@@ -63,13 +88,9 @@ public class Day17 extends Day {
                   .collect(Collectors.joining(","));
   }
 
-  // Maybe try binary search over all longs, sorting by longest matching output? Or by
-  // total output length? Search area is too big; an optimized search starting at target
-  // length minus one (15) would still take 68 hours to run.
-
   @Override
   String part2() {
-    return "";
+    return String.valueOf(Program.fromData(data).findInitialA());
   }
 
   public static void main(String[] args) {
@@ -85,5 +106,6 @@ public class Day17 extends Day {
       }
     };
     System.out.println(day.part1().equals("5,7,3,0"));
+    System.out.println(day.part2().equals("117440"));
   }
 }
