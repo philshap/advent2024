@@ -14,6 +14,9 @@ record Pos(int x, int y) {
   static final Pos D = new Pos(0, 1);
   static final Pos L = new Pos(-1, 0);
 
+  static Map<Character, Pos> CHAR_DIR = Map.of('^', U, '>', R, 'v', D, '<', L);
+  static Map<Pos, Character> DIR_CHAR = Pos.CHAR_DIR.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+
   static final Map<Pos, Pos> TURN = Map.of(U, R, R, D, D, L, L, U);
   static final Collection<Pos> DIRS = TURN.values();
 
