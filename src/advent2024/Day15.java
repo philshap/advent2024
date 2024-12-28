@@ -88,52 +88,24 @@ public class Day15 extends Day {
       return boxes.stream().filter(box -> box.atPos(pos)).findFirst().orElse(null);
     }
 
-    boolean moveHoriz(Pos pos, Pos dir, Set<Box> boxesToMove) {
-      var pushed = pos.plus(dir);
+    boolean canMove(Pos pos, Pos move, Set<Box> boxesToMove) {
+      var pushed = pos.plus(move);
       if (walls.contains(pushed)) {
         return false;
       }
       var box = boxAt(pushed);
-      if (box != null) {
-        boxesToMove.add(box);
-        if (dir.equals(Pos.L)) {
-          return moveHoriz(box.p1, dir, boxesToMove);
-        } else {
-          return moveHoriz(box.p2, dir, boxesToMove);
-        }
+      if (box != null && boxesToMove.add(box)) {
+        return canMove(box.p1, move, boxesToMove) && canMove(box.p2, move, boxesToMove);
       }
       return true;
-    }
-
-    boolean moveVert(Pos pos, Pos dir, Set<Box> boxesToMove) {
-      var pushed = pos.plus(dir);
-      if (walls.contains(pushed)) {
-        return false;
-      }
-      var box = boxAt(pushed);
-      if (box != null) {
-        if (boxesToMove.add(box)) {
-          return moveVert(box.p1, dir, boxesToMove) && moveVert(box.p2, dir, boxesToMove);
-        }
-        return true;
-      }
-      return true;
-    }
-
-    boolean moveBot(Pos move, Set<Box> boxesToMove) {
-      if (move.equals(Pos.R) || move.equals(Pos.L)) {
-        return moveHoriz(bot, move, boxesToMove);
-      }
-      return moveVert(bot, move, boxesToMove);
     }
 
     Warehouse move() {
       Set<Box> boxesToMove = new HashSet<>();
       Pos move = moves.getFirst();
-      boolean canMove = moveBot(move, boxesToMove);
       var newBot = bot;
       var newBoxes = boxes;
-      if (canMove) {
+      if (canMove(bot, move, boxesToMove)) {
         newBot = bot.plus(move);
         newBoxes = new ArrayList<>(boxes);
         newBoxes.removeAll(boxesToMove);
