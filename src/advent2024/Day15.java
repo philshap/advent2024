@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Day15 extends Day {
@@ -15,10 +14,6 @@ public class Day15 extends Day {
   }
 
   record Box(Pos p1, Pos p2) {
-    Box(Pos pos, boolean wide) {
-      this(pos, wide ? pos.plus(Pos.R) : pos);
-    }
-
     public boolean atPos(Pos pos) {
       return p1.equals(pos) || p2.equals(pos);
     }
@@ -31,28 +26,24 @@ public class Day15 extends Day {
   record Warehouse(Set<Pos> walls, List<Pos> moves, Pos bot, List<Box> boxes) {
     static Warehouse fromData(String data, boolean wide) {
       String[] split = data.split("\n\n");
-      Pos widen = wide ? new Pos(2, 1) : new Pos(1, 1);
       List<Box> boxes = new ArrayList<>();
-      AtomicReference<Pos> bot = new AtomicReference<>();
-      var map = Pos.streamOf(Support.splitInput(split[0]))
-                   .map(pair -> Pair.of(pair.l().scale(widen), pair.r()))
-                   .filter(pair -> switch (pair.r()) {
-                     case '#' -> true;
-                     case 'O' -> {
-                       boxes.add(new Box(pair.l(), wide));
-                       yield false;
-                     }
-                     case '@' -> {
-                       bot.set(pair.l());
-                       yield false;
-                     }
-                     default -> false;
-                   })
-                   .map(Pair::l)
-                   .flatMap(pos -> wide ? Stream.of(pos, pos.plus(Pos.R)) : Stream.of(pos))
-                   .collect(Collectors.toSet());
+      Set<Pos> walls = new HashSet<>();
+      var bot = new AtomicReference<Pos>();
+      Pos.streamOf(Support.splitInput(split[0]))
+          .forEach(pair -> {
+            Pos pos = wide ? pair.l().scale(new Pos(2, 1)) : pair.l();
+            Pos nextPos = wide ? pos.plus(Pos.R) : pos;
+            switch (pair.r()) {
+              case '#' -> {
+                walls.add(pos);
+                walls.add(nextPos);
+              }
+              case 'O' -> boxes.add(new Box(pos, nextPos));
+              case '@' -> bot.set(pos);
+            }
+          });
       var moves = split[1].chars().mapToObj(ch -> Pos.CHAR_DIR.get((char) ch)).filter(Objects::nonNull).toList();
-      return new Warehouse(map, moves, bot.get(), boxes);
+      return new Warehouse(walls, moves, bot.get(), boxes);
     }
 
     @SuppressWarnings("unused")
@@ -107,9 +98,7 @@ public class Day15 extends Day {
       var newBoxes = boxes;
       if (canMove(bot, move, boxesToMove)) {
         newBot = bot.plus(move);
-        newBoxes = new ArrayList<>(boxes);
-        newBoxes.removeAll(boxesToMove);
-        boxesToMove.stream().map(box -> box.move(move)).forEach(newBoxes::add);
+        newBoxes = boxes.stream().map(box -> boxesToMove.contains(box) ? box.move(move) : box).toList();
       }
       return new Warehouse(walls, moves.subList(1, moves.size()), newBot, newBoxes);
     }
