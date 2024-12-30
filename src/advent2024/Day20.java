@@ -67,7 +67,7 @@ public class Day20 extends Day {
     }
   }
 
-@Override
+  @Override
   String part1() {
     return String.valueOf(Track.fromInput(input).cheatCount(2));
   }
