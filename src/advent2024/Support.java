@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -80,5 +81,9 @@ public interface Support {
     result = func.apply(input);
     cache.put(input, result);
     return result;
+  }
+
+  static <K, V> Map<V, K> reverseMap(Map<K, V> map) {
+    return map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
   }
 }

@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
 public class Day6 extends Day {
   protected Day6() {
@@ -22,7 +21,7 @@ public class Day6 extends Day {
 
   record Lab(Map<Pos, Character> map, Guard guard) {
     static Lab fromInput(List<String> input) {
-      var map = Pos.collectByPos(input, Function.identity());
+      var map = Pos.collectByPos(input);
       Guard guard = null;
       for (var entry : map.entrySet()) {
         if (entry.getValue() == '^') {

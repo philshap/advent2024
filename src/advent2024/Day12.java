@@ -65,7 +65,7 @@ public class Day12 extends Day {
   }
 
   int totalCost(ToIntFunction<Plot> countFences) {
-    var plots = Pos.collectByPos(input, Function.identity());
+    var plots = Pos.collectByPos(input);
     Set<Pos> seen = new HashSet<>();
     return plots.keySet().stream()
                 .map(pos -> Region.fromPos(plots, pos, seen))

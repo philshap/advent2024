@@ -15,7 +15,7 @@ record Pos(int x, int y) {
   static final Pos L = new Pos(-1, 0);
 
   static Map<Character, Pos> CHAR_DIR = Map.of('^', U, '>', R, 'v', D, '<', L);
-  static Map<Pos, Character> DIR_CHAR = Pos.CHAR_DIR.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+  static Map<Pos, Character> DIR_CHAR = Support.reverseMap(Pos.CHAR_DIR);
 
   static final Map<Pos, Pos> TURN = Map.of(U, R, R, D, D, L, L, U);
   static final Collection<Pos> DIRS = TURN.values();
@@ -25,6 +25,10 @@ record Pos(int x, int y) {
                     .boxed()
                     .flatMap(x -> IntStream.range(0, input.size())
                                            .mapToObj(y -> Pair.of(new Pos(x, y), input.get(y).charAt(x))));
+  }
+
+  static Map<Pos, Character> collectByPos(List<String> input) {
+    return collectByPos(input, Function.identity());
   }
 
   static <T> Map<Pos, T> collectByPos(List<String> input, Function<Character, T> convert) {
